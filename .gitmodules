@@ -1,0 +1,6 @@
+[submodule "/Users/connibilham/CLionProject/2D-Engine/external/glfw"]
+	path = /Users/connibilham/CLionProject/2D-Engine/external/glfw
+	url = https://github.com/glfw/glfw
+[submodule "/Users/connibilham/CLionProject/2D-Engine/external/glm"]
+	path = /Users/connibilham/CLionProject/2D-Engine/external/glm
+	url = https://github.com/g-truc/glm
