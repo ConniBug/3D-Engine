@@ -25,7 +25,7 @@ jobs:
           fi
 
       - name: show dir
-
+        run: ls
 
       - name: Configure build
         run: |
