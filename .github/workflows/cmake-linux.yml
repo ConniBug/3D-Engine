@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Debug -S /home/runner/work/2D-Engine/2D-Engine ./
+          cmake -DCMAKE_BUILD_TYPE=Debug ../
 
       - name: Build project
         run: |
