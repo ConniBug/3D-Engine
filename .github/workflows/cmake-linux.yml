@@ -1,0 +1,41 @@
+name: Linux Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ ubuntu-22.04, ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install cmake g++
+          if [ ! -d "build" ]; then
+            mkdir build
+          fi
+
+      - name: Configure build
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+
+      - name: Build project
+        run: |
+          cd build
+          make
+
+#      - name: Run tests
+#        run: |
+#          cd build
+#          ctest --output-on-failure
