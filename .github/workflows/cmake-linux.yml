@@ -20,7 +20,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install cmake g++
-          sudo apt-get install glfw3
+          sudo apt-get install libglfw3-dev
           if [ ! -d "build" ]; then
             mkdir build
           fi
