@@ -20,6 +20,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install cmake g++
+          sudo apt-get build-dep glfw3
           if [ ! -d "build" ]; then
             mkdir build
           fi

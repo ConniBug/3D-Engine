@@ -15,7 +15,8 @@ jobs:
 
       - name: Install packages
         run: |
-          choco install mingw
+          choco install mingw 
+          choco install glfw3
 
       - name: Configure build
         run: |
