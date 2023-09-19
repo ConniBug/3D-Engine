@@ -27,15 +27,19 @@ jobs:
 
       - name: show dir
         run: |
-          pwd
-          ls
+        pwd
+        ls
 
       - name: Configure build
         run: |
-          cmake --build build --target 2D-Engine -j 6
+          mkdir -p build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Debug ../
 
       - name: Build project
         run: |
+          make
+          cd build
           make
 
 #      - name: Run tests
