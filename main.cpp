@@ -10,6 +10,7 @@
 #include "include/Window.h"
 
 #include "Scenes/main_scene.h"
+#include "Scenes/orth_scene.h"
 
 Storage* storage;
 
