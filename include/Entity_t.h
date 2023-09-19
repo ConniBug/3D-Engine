@@ -13,6 +13,8 @@
 #include "logging.h"
 //#include "PhysicsEngine.h"
 
+#include "Shader.h"
+
 class PhysicsEngine;
 class Entity_t {
 private:
@@ -20,16 +22,20 @@ private:
 
 public:
     double timer;
-    unsigned int shader_id;
+    Shader* shader;
 
-    PhysicsEngine* physicsEngine;
+    class Physics {
+    public:
+        bool enabled = false;
+        PhysicsEngine* engine;
+    } physics;
 
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    Entity_t(unsigned int shader_id);
-    Entity_t(unsigned int shader_id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+    Entity_t(Shader* shader);
+    Entity_t(Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 
     ~Entity_t();
 

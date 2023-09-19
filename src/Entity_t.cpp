@@ -4,8 +4,9 @@
 
 #include "Entity_t.h"
 
-Entity_t::Entity_t(unsigned int shader_id) {
-    this->shader_id = shader_id;
+
+Entity_t::Entity_t(Shader* shader) {
+    this->shader = shader;
     load();
 }
 
@@ -14,8 +15,8 @@ Entity_t::~Entity_t() {
     glDeleteBuffers(1, &VBO);
 }
 
-Entity_t::Entity_t(unsigned int shader_id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
-    this->shader_id = shader_id;
+Entity_t::Entity_t(Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
+    this->shader = shader;
 
     this->position = position;
     this->rotation = rotation;
@@ -26,47 +27,47 @@ Entity_t::Entity_t(unsigned int shader_id, glm::vec3 position, glm::vec3 rotatio
 
 void Entity_t::load() {
     float vertices[] = {
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
 
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
 
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
 
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
 
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-            0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
 
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f
     };
 
     //        unsigned int indices[] = {  // note that we start from 0!
@@ -104,6 +105,8 @@ void Entity_t::load() {
 }
 
 void Entity_t::draw() {
+    // Apply shader
+//    glUseProgram(shader->id);
 
     glBindVertexArray(VAO);
     glm::mat4 model = glm::mat4(1.0f);
@@ -114,13 +117,14 @@ void Entity_t::draw() {
     }
     model = glm::scale(model, scale);
 
-    glUniformMatrix4fv(glGetUniformLocation(shader_id, "model"), 1, GL_FALSE, &model[0][0]);
+    // Set model matrix
+    glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, &model[0][0]);
+
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
 }
 
 void Entity_t::init() {
-    logging::log("Initializing entity");
     timer = 0;
 }

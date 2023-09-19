@@ -4,13 +4,14 @@
 
 #include "PhysicsEngine.h"
 
-PhysicsEngine::PhysicsEngine() = default;
-PhysicsEngine::PhysicsEngine(Entity_t* entity_i) {
-    this->entity = entity_i;
+PhysicsEngine::PhysicsEngine(Entity_t *entity) {
+    this->entity = entity;
 }
 
 void PhysicsEngine::ApplyPhysics(double deltaTime) {
-//        std::cout << "PhysicsEngine::ApplyPhysics(Entity_t* entity) Called" << std::endl;
+//    std::cout << "PhysicsEngine::ApplyPhysics(Entity_t* entity) Called" << std::endl;
 
-    this->entity->position.y = this->entity->position.y - (9.81 * deltaTime); // Haha gravity
+    if(entity->physics.enabled) {
+        this->entity->position.y = this->entity->position.y - (9.81 * deltaTime); // Haha gravity
+    }
 }

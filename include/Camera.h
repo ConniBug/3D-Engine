@@ -15,6 +15,16 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
+#include "logging.h"
+
+
+#include <iostream>
+
+enum CAMERA_TYPE {
+    NONE,
+    PERSPECTIVE,
+    ORTHOGRAPHIC
+};
 
 class Camera {
 public:
@@ -32,10 +42,14 @@ public:
     float mouse_sensitivity;
     float fov;
 
+    CAMERA_TYPE type;
+
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
            glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
            float yaw = DEFAULT_YAW,
-           float pitch = DEFAULT_PITCH) {
+           float pitch = DEFAULT_PITCH,
+           CAMERA_TYPE type = CAMERA_TYPE::NONE) {
+
 
         front = glm::vec3(0.0f, 0.0f, -1.0f);
         movement_speed = DEFAULT_SPEED;
@@ -47,6 +61,7 @@ public:
         this->global_up = up;
         this->yaw = yaw;
         this->pitch = pitch;
+        this->type = type;
 
         updateCamera();
     }
@@ -82,12 +97,24 @@ public:
         this->yaw   += x_offset * this->mouse_sensitivity;
         this->pitch += y_offset * this->mouse_sensitivity;
 
-        if (this->pitch > 89.0f) {
-            this->pitch = 89.0f;
-        }
-        if (this->pitch < -89.0f) {
-            this->pitch = -89.0f;
-        }
+//        const float pitch_max = 5.f;
+//        const float yaw_max = 5.f;
+//        if (this->pitch > pitch_max)
+//            this->pitch = pitch_max;
+//        if (this->pitch < -pitch_max)
+//            this->pitch = -pitch_max;
+//
+//        if (this->yaw < -90.f - yaw_max) {
+//            this->yaw = -90.f - yaw_max;
+//        }
+//        if (this->yaw > -90.f + yaw_max) {
+//            this->yaw = -90.f + yaw_max;
+//        }
+
+        if(this->yaw > 360.f)
+            this->yaw -= 360.f;
+        if(this->yaw < -360.f)
+            this->yaw += 360.f;
 
         updateCamera();
     }
@@ -99,6 +126,26 @@ public:
             this->fov = 1.0f;
         else if(this->fov > 120.0f)
             this->fov = 120.0f;
+    }
+
+    glm::mat4 getProjectionMatrix(float width, float height) {
+        auto projection = glm::mat4(1.0f);
+        if(this->type == CAMERA_TYPE::NONE) {
+            logging::error("Camera::getProjectionMatrix() - Camera type not set");
+            std::getchar();
+            exit(-1);
+        }
+        switch (type) {
+            case CAMERA_TYPE::ORTHOGRAPHIC:
+                projection *= glm::ortho(0.0f, width, 0.0f, height, -100.0f, 100.0f);
+                break;
+            case CAMERA_TYPE::PERSPECTIVE:
+                projection *= glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
+                break;
+            case NONE:
+                break;
+        }
+        return projection;
     }
 
 private:

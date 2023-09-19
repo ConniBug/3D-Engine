@@ -8,14 +8,12 @@
 #include <iostream>
 #include "Entity_t.h"
 
+class Entity_t;
 class PhysicsEngine {
-private:
-    Entity_t* entity;
-
 public:
+    Entity_t* entity{};
 
-    PhysicsEngine();
-    PhysicsEngine(Entity_t* entity_i);
+    PhysicsEngine(Entity_t* entity);
 
     void ApplyPhysics(double deltaTime);
 };
