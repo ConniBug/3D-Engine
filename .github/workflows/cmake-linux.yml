@@ -20,7 +20,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install cmake g++
-          sudo apt-get glfw3
+          sudo apt-get install glfw3
           if [ ! -d "build" ]; then
             mkdir build
           fi
@@ -36,6 +36,7 @@ jobs:
 
       - name: Build project
         run: |
+          make
           cd build
           make
 
