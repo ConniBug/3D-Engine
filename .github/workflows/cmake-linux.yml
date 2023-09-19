@@ -27,8 +27,8 @@ jobs:
 
       - name: show dir
         run: |
-        pwd
-        ls
+          pwd
+          ls
 
       - name: Configure build
         run: |
