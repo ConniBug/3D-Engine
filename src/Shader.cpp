@@ -3,7 +3,6 @@
 //
 
 #include "../include/Shader.h"
-#include "glad/glad.h"
 
 //unsigned int load_shader() {
 //    // Build root project path
@@ -150,7 +149,7 @@ void Shader::load_shader(const std::string& vertex_path_r, const std::string& fr
     glDeleteShader(fragment_shader_id);
 }
 
-void Shader::check_compile_status(unsigned int shader_id) {
+bool Shader::check_compile_status(unsigned int shader_id) {
     int success;
     char info_log[512];
     glGetShaderiv(shader_id, GL_COMPILE_STATUS, &success);
@@ -161,11 +160,12 @@ void Shader::check_compile_status(unsigned int shader_id) {
 
         std::cout << "Press enter to continue..." << std::endl;
         std::cin.get();
+        return false;
     }
-    std::cout << "[.] Compiled successfully" << std::endl;
+    return true;
 }
 
-void Shader::apply() const {
+void Shader::apply(glm::mat4 view, glm::mat4 projection) const {
     glUseProgram(this->id);
 
     static float value = -1.0f;
@@ -176,7 +176,13 @@ void Shader::apply() const {
     value += increment;
     int phaseID = glGetUniformLocation(this->id, "phase");
     glUniform1f(phaseID, value + 1);
+
+    if(view != glm::mat4(0))
+        glUniformMatrix4fv(glGetUniformLocation(this->id, "view"), 1, GL_FALSE, &view[0][0]);
+    if(projection != glm::mat4(0))
+        glUniformMatrix4fv(glGetUniformLocation(this->id, "projection"), 1, GL_FALSE, &projection[0][0]);
 }
+
 
 unsigned int Shader::compile_shader(unsigned int type, const std::string &source) {
     logging::debug("Shader::compile_shader() - " + std::to_string(type) + " - " + source);

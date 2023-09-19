@@ -9,17 +9,38 @@
 #include "Entity_t.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "DebugRendering.h"
+#include "GLFW/glfw3.h"
+#include "Storage.h"
+
 
 class Scene {
 public:
     Scene();
     ~Scene();
 
-    std::vector<Entity_t*> entity_list;
-    std::vector<Shader*> shaders;
+    Camera* camera;
 
-    virtual void init(Camera* camera);
-    virtual void update(double deltaTime);
+    std::vector<DebugEntry *> debug_list;
+    std::vector<Entity_t   *> entity_list;
+
+    std::vector<Shader     *> shaders;
+
+    int initiated = 0;
+
+    // Master functions
+    void init(Camera* camera);
+    void update(double deltaTime);
+
+    // Overridden functions
+    virtual void Init(Camera* camera);
+    virtual void Update(double deltaTime);
+    virtual void WindowResize(int width, int height);
+    virtual void HandleInput(GLFWwindow *window);
+    virtual void Shutdown(int cause = 0);
+    virtual void KeyPressed(GLFWwindow* window, int key, int scancode, int mods);
+
+    void draw_debug();
 };
 
 

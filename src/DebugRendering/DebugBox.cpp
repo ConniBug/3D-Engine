@@ -1,26 +1,28 @@
 //
-// Created by Conni Bilham on 15/07/2023.
+// Created by Conni Bilham on 28/08/2023.
 //
 
 #include "DebugRendering.h"
+#include "DebugRendering/DebugBox.h"
 #include "glad/glad.h"
 
-DebugLine::DebugLine(unsigned int shader_id, glm::vec3 start, glm::vec3 end) {
+DebugBox::DebugBox(unsigned int shader_id, glm::vec3 start, glm::vec3 end) {
     this->shader_id = shader_id;
     this->start = start;
     this->end = end;
-
-    this->load();
 }
 
-DebugLine::~DebugLine() {
-    std::cout << "Line::~Line()" << std::endl;
+DebugBox::~DebugBox() {
+    std::cout << "Box::~Box()" << std::endl;
 }
 
-void DebugLine::load() {
+void DebugBox::load() {
+    std::cout << "Box::load()" << std::endl;
     float vertices[] = {
             start.x, start.y, 0.0f,
-            end.x, end.y, 0.0f
+            end.x, start.y, 0.0f,
+            end.x, end.y, 0.0f,
+            start.x, end.y, 0.0f
     };
 
     glGenVertexArrays(1, &VAO);
@@ -44,27 +46,25 @@ void DebugLine::load() {
     glBindVertexArray(0);
 }
 
-void DebugLine::draw() {
+void DebugBox::draw() {
     // Apply shader
     glUseProgram(shader_id);
 
     float vertices[] = {
             start.x, start.y, 0.0f,
-            end.x, end.y, 0.0f
+            end.x, start.y, 0.0f,
+            end.x, end.y, 0.0f,
+            start.x, end.y, 0.0f
     };
 
     // Bind VBO
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-
     glBindVertexArray(VAO);
-    glDrawArrays(GL_LINES, 0, 2);
-
+    glDrawArrays(GL_LINE_LOOP, 0, 4);
 }
 
-void DebugLine::init() {
-    std::cout << "Line::init()" << std::endl;
+void DebugBox::init() {
+    std::cout << "Box::init()" << std::endl;
 }
-
-

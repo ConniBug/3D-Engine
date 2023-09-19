@@ -6,6 +6,15 @@
 #include "Storage.h"
 #include "../include/Window.h"
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if(storage->loaded_scene)
+        storage->loaded_scene->KeyPressed(window, key, scancode, mods);
+//    std::cout << "[" + std::to_string(key) + "] - " + "[" + std::to_string(scancode) + "] - " + "[" + std::to_string(action) + "] - " + "[" + std::to_string(mods) + "]" << std::endl;
+}
+void character_callback(GLFWwindow* window, unsigned int codepoint) {
+//    std::cout << (char)codepoint << std::endl;
+}
+
 Window::Window(int width, int height, std::string title, int fullscreen, Camera* camera) : width(width), height(height), title(title) {
     this->loaded_scene = storage->scene_list.at(storage->loaded_scene_number);
     this->camera = camera;
@@ -34,7 +43,6 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera*
     glfwGetFramebufferSize(window, &width, &height);
     glfwSetFramebufferSizeCallback(window, window_size_callback);
     glViewport(0, 0, width, height);
-    glfwSetFramebufferSizeCallback(window, window_size_callback);
 
     glfwSetWindowUserPointer(window, this);
     auto mouse_callback = [](GLFWwindow* window, double xposIn, double yposIn) {
@@ -56,6 +64,7 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera*
         window_loop_callback(window);
     }
 
+    delete this;
 }
 
 Window::~Window() {
@@ -72,10 +81,23 @@ void Window::set_camera(Camera* camera_n) {
     this->camera = camera_n;
 }
 
+void Window::set_window_title(std::string title_n) {
+    this->title = title_n;
+    glfwSetWindowTitle(glfwGetCurrentContext(), title_n.c_str());
+}
+
 void Window::window_size_callback(GLFWwindow* window, int width, int height) {
     logging::info("Window size changed: " + std::to_string(width) + "x" + std::to_string(height));
 
-    glViewport(0, 0, width, height);
+    storage->window.width = width;
+    storage->window.height = height;
+    storage->window.aspect_ratio = (float)storage->window.width / (float)storage->window.height;
+
+    if(window)
+        glViewport(0, 0, width, height);
+
+    if(storage->loaded_scene)
+        storage->loaded_scene->WindowResize(width, height);
 }
 
 static bool vsync = true;
@@ -95,8 +117,6 @@ void Window::window_loop_callback(GLFWwindow *window) {
     lastFrame = currentFrame;
 
     averageFrameTime = averageFrameTime == 0.0f ? deltaTime : (averageFrameTime + deltaTime) / 2.0f;
-//    std::cout << "FPS: " << averageFPS << std::endl;
-//    std::cout << "Frame time: " << averageFrameTime << std::endl;
 
     glClearColor(0.2f, 0.0f, 0.2f, 1.0f);
 
@@ -110,43 +130,11 @@ void Window::window_loop_callback(GLFWwindow *window) {
     handle_input(window);
 
 
-
-//    static auto triangle = new Entity_t();
-//    shaders[0]->apply();
-//
-//    // create transformations
-//    glm::mat4 view          = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-//    glm::mat4 projection    = glm::mat4(1.0f);
-//    projection = glm::perspective(glm::radians(camera->fov), (float)800 / (float)600, 0.1f, 100.0f);
-//    view = camera->view_matrix();
-//
-//    const float radius = 10.0f;
-//    float camX = sin(glfwGetTime()) * radius;
-//    float camZ = cos(glfwGetTime()) * radius;
-//    view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-//
-//    if(main_rotation.x != 0 || main_rotation.y != 0 || main_rotation.z != 0) {
-//        auto normalized = glm::normalize(main_rotation);
-//        view = glm::rotate(view, glm::radians(glm::length(main_rotation)), normalized);
-//    }
-
-//    // pass transformation matrices to the shader
-//    glUniformMatrix4fv(glGetUniformLocation(shaders[0]->id, "view"), 1, GL_FALSE, &view[0][0]);
-//    glUniformMatrix4fv(glGetUniformLocation(shaders[0]->id, "projection"), 1, GL_FALSE, &projection[0][0]);
-
     static int frameCount = 0;
     frameCount++;
 
 
     loaded_scene->update(deltaTime);
-
-    /* Draws a square */
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(0.5f, 0.5f);
-    glVertex2f(-0.5f, 0.5f);
-    glVertex2f(-0.5f, -0.5f);
-    glVertex2f(0.5f, -0.5f);
-    glEnd();
 
     glfwSwapBuffers(window);
 
@@ -178,8 +166,10 @@ void Window::window_loop_callback(GLFWwindow *window) {
     glUseProgram(0);
 }
 
-#include "../Scenes/main_scene.h"
 void Window::handle_input(GLFWwindow *window) {
+    if(this->loaded_scene)
+        this->loaded_scene->HandleInput(window);
+
     static bool wireframe = false;
     static double last_click = 0;
 

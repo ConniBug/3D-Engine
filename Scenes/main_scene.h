@@ -7,15 +7,17 @@
 
 #include "Scene.h"
 #include "Camera.h"
+#include "Storage.h"
 
 #include <iostream>
 
 class main_scene : public Scene {
 public:
-    Camera* camera;
+    void Init(Camera* camera) override;
+    void Update(double deltaTime) override;
+    void WindowResize(int width, int height) override;
 
-    void init(Camera* camera) override;
-    void update(double deltaTime) override;
+
 };
 
 

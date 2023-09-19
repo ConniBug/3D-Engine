@@ -7,11 +7,14 @@
 
 #include <iostream>
 #include <fstream>
+#include "glad/glad.h"
+#include "logging.h"
+#include "glm.hpp"
 
 class Shader {
 private:
     static unsigned int compile_shader(unsigned int type, const std::string& source);
-    static void check_compile_status(unsigned int shader_id);
+    static bool check_compile_status(unsigned int shader_id);
 public:
     unsigned int id;
 
@@ -29,7 +32,7 @@ public:
     void reload();
     void load_shader(const std::string& vertex_path_r, const std::string& fragment_path_r);
 
-    void apply() const;
+    void apply(glm::mat4 view = glm::mat4(0.0f), glm::mat4 projection = glm::mat4(0.0f)) const;
 };
 
 
