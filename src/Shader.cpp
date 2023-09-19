@@ -65,27 +65,35 @@
 //}
 
 Shader::Shader(const std::string& vertex_path, const std::string& fragment_path) {
-    std::cout << "[+] Creating new shader" << std::endl;
+    logging::verbose("Creating new shader" + vertex_path + " " + fragment_path);
+
     this->load_shader(vertex_path, fragment_path);
 //    ::load_shader();
 }
 
 Shader::~Shader() {
-    std::cout << "[~] Shader destroyed" << std::endl;
+    logging::verbose("Deleting shader " + std::to_string(this->id));
     glDeleteProgram(this->id);
 }
 
 void Shader::load_shader(const std::string& vertex_path_r, const std::string& fragment_path_r) {
-    const std::string root_path = std::string("/Users/connibilham/CLionProject/2D-Engine/");
-    this->vertex_path = root_path + vertex_path_r;
-    this->fragment_path = root_path + fragment_path_r;
+    // Get current working directory from environment
+    char* root_path = std::getenv("PWD");
+    if (root_path == nullptr) {
+        logging::error("ERROR::SHADER::CWD_NOT_FOUND");
+        return;
+    }
+    std::string tmp = std::string(root_path) + std::string("/../");
+    logging::verbose("CWD: " + std::string(tmp));
 
-#ifdef DEBUG
-    std::cout << "[/] Shader loading" << std::endl;
-    std::cout << root_path << std::endl;
-    std::cout << this->vertex_path << std::endl;
-    std::cout << this->fragment_path << std::endl;
-#endif
+    this->vertex_path = tmp + vertex_path_r;
+    this->fragment_path = tmp + fragment_path_r;
+
+    logging::debug("Shader::load_shader() - ");
+    logging::debug("-  cwd          : " + tmp);
+    logging::debug("-  vertex_path  : " + this->vertex_path);
+    logging::debug("-  fragment_path: " + this->fragment_path);
+
 
     // Load vertex and fragment shader from disk
     auto vertex_shader_file = std::ifstream(this->vertex_path);
@@ -100,21 +108,27 @@ void Shader::load_shader(const std::string& vertex_path_r, const std::string& fr
     const char* fragment_raw = this->fragment_raw.c_str();
 
     // Compile vertex shader
-    std::cout << "[\\] Compiling vertex shader" << std::endl;
+    logging::verbose("Compiling vertex shader");
     unsigned int vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader_id, 1, &vertex_raw, nullptr);
     glCompileShader(vertex_shader_id);
-    check_compile_status(vertex_shader_id);
-
+    if(!check_compile_status(vertex_shader_id)) {
+        logging::error("ERROR::SHADER::VERTEX::COMPILATION_FAILED");
+        std::cout << "Press enter to continue..." << std::endl;
+        std::cin.get();
+    }
     // Compile fragment shader
-    std::cout << "[\\] Compiling fragment shader" << std::endl;
+    logging::verbose("Compiling fragment shader");
     unsigned int fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader_id, 1, &fragment_raw, nullptr);
     glCompileShader(fragment_shader_id);
-    check_compile_status(fragment_shader_id);
-
+    if(!check_compile_status(fragment_shader_id)) {
+        logging::error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED");
+        std::cout << "Press enter to continue..." << std::endl;
+        std::cin.get();
+    }
     // Link shaders
-    std::cout << "[=] Linking shaders" << std::endl;
+    logging::verbose("Linking vertex and fragment shaders");
     this->id = glCreateProgram();
     glAttachShader(this->id, vertex_shader_id);
     glAttachShader(this->id, fragment_shader_id);
@@ -126,9 +140,10 @@ void Shader::load_shader(const std::string& vertex_path_r, const std::string& fr
     glGetProgramiv(this->id, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(this->id, 512, nullptr, info_log);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
+        logging::error("ERROR::SHADER::PROGRAM::LINKING_FAILED");
+        std::cout << info_log << std::endl;
     }
-    std::cout << "[.] Shaders linked successfully" << std::endl;
+    logging::debug("Shaders linked successfully");
 
     // Delete shaders
     glDeleteShader(vertex_shader_id);
@@ -141,7 +156,8 @@ void Shader::check_compile_status(unsigned int shader_id) {
     glGetShaderiv(shader_id, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(shader_id, 512, nullptr, info_log);
-        std::cout << "ERROR::SHADER:: - " << shader_id << " - ::COMPILATION_FAILED\n" << info_log << std::endl;
+        logging::error("ERROR::SHADER:: - " + std::to_string(shader_id) + " - ::COMPILATION_FAILED");
+        std::cout << info_log << std::endl;
 
         std::cout << "Press enter to continue..." << std::endl;
         std::cin.get();
@@ -163,8 +179,7 @@ void Shader::apply() const {
 }
 
 unsigned int Shader::compile_shader(unsigned int type, const std::string &source) {
-    std::cout << "Compiling shader" << std::endl;
-    std::cout << source << std::endl;
+    logging::debug("Shader::compile_shader() - " + std::to_string(type) + " - " + source);
     unsigned int shader_id = glCreateShader(type);
 
     const char* CSource = source.c_str();
@@ -175,7 +190,7 @@ unsigned int Shader::compile_shader(unsigned int type, const std::string &source
 }
 
 void Shader::reload() {
-    std::cout << "Reloading shader" << std::endl;
+    logging::debug("Shader::reload()");
     glDeleteProgram(this->id);
     this->id = -1;
     this->load_shader(this->vertex_path, this->fragment_path);

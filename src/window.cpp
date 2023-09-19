@@ -23,6 +23,16 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera*
         return;
     }
 
+    logging::debug("OpenGL Version: " + std::string((char*)glGetString(GL_VERSION)));
+    logging::debug("OpenGL Vendor: " + std::string((char*)glGetString(GL_VENDOR)));
+    logging::debug("OpenGL Renderer: " + std::string((char*)glGetString(GL_RENDERER)));
+    logging::debug("OpenGL Shading Language Version: " + std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetCharCallback(window, character_callback);
+
+    glfwGetFramebufferSize(window, &width, &height);
+    glfwSetFramebufferSizeCallback(window, window_size_callback);
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, window_size_callback);
 
@@ -37,10 +47,7 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera*
     glfwSetScrollCallback(window, scroll_callback);
 
 
-
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    logging::log("Window created");
+    logging::info("Window created");
 
     loaded_scene->init(this->camera);
 
@@ -52,8 +59,13 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera*
 }
 
 Window::~Window() {
-    logging::log("Destroying window");
+    logging::info("Destroying window");
+    for (auto* scene : storage->scene_list) {
+        delete scene;
+    }
+
     glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
 
 void Window::set_camera(Camera* camera_n) {
@@ -61,7 +73,7 @@ void Window::set_camera(Camera* camera_n) {
 }
 
 void Window::window_size_callback(GLFWwindow* window, int width, int height) {
-    std::cout << "Resizing window to " << width << "x" << height << std::endl;
+    logging::info("Window size changed: " + std::to_string(width) + "x" + std::to_string(height));
 
     glViewport(0, 0, width, height);
 }
@@ -82,7 +94,6 @@ void Window::window_loop_callback(GLFWwindow *window) {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-//    averageFPS = averageFPS == 0.0f ? 1.0f / deltaTime : (averageFPS + (1.0f / deltaTime)) / 2.0f;
     averageFrameTime = averageFrameTime == 0.0f ? deltaTime : (averageFrameTime + deltaTime) / 2.0f;
 //    std::cout << "FPS: " << averageFPS << std::endl;
 //    std::cout << "Frame time: " << averageFrameTime << std::endl;
@@ -93,7 +104,7 @@ void Window::window_loop_callback(GLFWwindow *window) {
     glEnable(GL_DEPTH_TEST);
 
     if (glfwRawMouseMotionSupported()) {
-        logging::log("Raw mouse motion supported");
+        logging::info("Raw mouse motion supported");
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
     }
     handle_input(window);
@@ -141,12 +152,12 @@ void Window::window_loop_callback(GLFWwindow *window) {
 
     if (!full && fps_history_index + 1 == 100) {
         full = true;
-        logging::log("FPS history full");
+        logging::info("FPS history full");
     }
     fps_history[fps_history_index] = 1.0f / deltaTime;
     fps_history_index = (fps_history_index + 1) % 100;
 
-    const float fps = 60.0f;
+    const float fps = 30.0f;
     auto currentFrameDuation = glfwGetTime() - currentFrame;
     if (vsync) {
         glfwSwapInterval(1);
@@ -154,7 +165,11 @@ void Window::window_loop_callback(GLFWwindow *window) {
             std::this_thread::sleep_for(std::chrono::milliseconds((int)((1.0 / fps - currentFrameDuation) * 1000)));
         }
         auto newFrameDuration = glfwGetTime() - currentFrame;
-        std::cout << " - FPS: " << (int)(1.0 / newFrameDuration) << " - Dev: " << std::abs(((int)(1.0 / newFrameDuration)) - (fps)) << std::endl;
+
+        // If lagging
+        if (newFrameDuration > 1.0) {
+            logging::error("Lagging behind: " + std::to_string(1/newFrameDuration));
+        }
     } else
         glfwSwapInterval(0);
 
@@ -178,6 +193,22 @@ void Window::handle_input(GLFWwindow *window) {
     else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
         sprinting = false;
 
+    static bool ready = false;
+    static bool toggle = false;
+    if(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && ready) {
+        logging::info("Toggle cursor");
+
+        if(!toggle)
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        else
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        toggle = !toggle;
+        ready = false;
+    }
+    else if(glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
+        ready = true;
+    }
+
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->HandleKeyboard(Camera::CameraMovement::FORWARD, deltaTime, sprinting);
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -195,18 +226,27 @@ void Window::handle_input(GLFWwindow *window) {
         return;
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        this->loaded_scene = new main_scene();
+        logging::info("Reloading scene");
+
+        storage->loaded_scene_number = storage->loaded_scene_number == 0 ? 1 : 0;
+        this->loaded_scene = storage->scene_list.at(storage->loaded_scene_number);
+        storage->loaded_scene = this->loaded_scene;
+
         this->loaded_scene->init(this->camera);
         last_click = current_time;
     }
 
     // VSync toggle
     if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS) {
+        logging::info("VSync: " + std::to_string(vsync));
+
         vsync = !vsync;
         last_click = current_time;
     }
 
     if(glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        logging::info("Wireframe: " + std::to_string(wireframe));
+
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         else

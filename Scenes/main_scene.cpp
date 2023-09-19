@@ -13,6 +13,7 @@
 static Line* line;
 void main_scene::init(Camera* camera) {
     logging::log("main_scene::init()");
+    logging::verbose("main_scene::init()");
 
     this->camera = camera;
 
@@ -39,7 +40,7 @@ void main_scene::init(Camera* camera) {
         i->init();
     }
 
-    logging::log("main_scene::init()");
+    logging::verbose("main_scene::init()");
 }
 
 #include "PhysicsEngine.h"

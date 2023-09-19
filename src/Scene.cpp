@@ -5,7 +5,7 @@
 #include "../include/Scene.h"
 
 Scene::Scene() {
-    std::cout << "Scene::Scene()" << std::endl;
+    logging::verbose("Scene::Scene()");
 }
 
 Scene::~Scene() {
@@ -13,7 +13,12 @@ Scene::~Scene() {
 }
 
 void Scene::update(double deltaTime) {
-    std::cout << "Scene::update()" << std::endl;
+    if(camera == nullptr) {
+        logging::error("Scene::update() - Camera is null");
+        return;
+    }
+
+    this->Update(deltaTime);
 }
 
 void Scene::init(Camera* camera) {

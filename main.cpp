@@ -20,7 +20,7 @@ int main() {
     storage = new Storage();
 
     if (!glfwInit()) {
-        std::cout << "Failed to initialize GLFW" << std::endl;
+        logging::error("Failed to initialize GLFW");
         return -1;
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

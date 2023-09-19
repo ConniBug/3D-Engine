@@ -8,10 +8,12 @@
 #include <iostream>
 
 class logging {
-public:
     static void log(const std::string& message);
+public:
+    static void info(const std::string& message);
     static void error(const std::string& message);
     static void verbose(const std::string& message);
+    static void debug(const std::string& message);
 };
 
 
