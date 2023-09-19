@@ -28,14 +28,12 @@ public:
     Scene* loaded_scene;
     Camera* camera;
 
-    // Shader list
-    std::vector<Shader*> shaders = {};
-
     Window(int width, int height, std::string title, int fullscreen, Camera* camera_n);
 
     ~Window();
 
     void set_camera(Camera* camera_n);
+    void set_window_title(std::string title_n);
 
     static void window_size_callback(GLFWwindow* window, int width, int height);
     void window_loop_callback(GLFWwindow* window);

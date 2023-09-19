@@ -22,11 +22,22 @@ set(SOURCE_FILES
         src/Storage.cpp  include/Storage.h
         src/Scene.cpp    include/Scene.h
 
-        src/DebugRendering.cpp src/DebugRendering.h
         src/PhysicsEngine.cpp  include/PhysicsEngine.h
         Scenes/main_scene.cpp  Scenes/main_scene.h
 
-        )
+        Scenes/orth_scene.cpp Scenes/orth_scene.h
+
+        src/CollisionEngine.cpp include/CollisionEngine.h
+
+        src/DebugRendering.cpp
+        include/DebugRendering.h
+
+        include/DebugRendering/DebugBox.h
+        src/DebugRendering/DebugBox.cpp
+
+        include/DebugRendering/DebugEntry.h
+        src/DebugRendering/DebugEntry.cpp
+)
 
 
 # add includes
