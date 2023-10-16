@@ -2,9 +2,11 @@
 // Created by Conni Bilham on 28/08/2023.
 //
 
-#include "DebugRendering.h"
+#include <iostream>
 #include "DebugRendering/DebugBox.h"
 #include "glad/glad.h"
+
+#include "../include/logging.h"
 
 DebugBox::DebugBox(unsigned int shader_id, glm::vec3 start, glm::vec3 end) {
     this->shader_id = shader_id;
@@ -13,11 +15,11 @@ DebugBox::DebugBox(unsigned int shader_id, glm::vec3 start, glm::vec3 end) {
 }
 
 DebugBox::~DebugBox() {
-    std::cout << "Box::~Box()" << std::endl;
+    logging::verbose("Box::~Box()");
 }
 
 void DebugBox::load() {
-    std::cout << "Box::load()" << std::endl;
+    logging::verbose("Box::load()");
     float vertices[] = {
             start.x, start.y, 0.0f,
             end.x, start.y, 0.0f,
@@ -66,5 +68,5 @@ void DebugBox::draw() {
 }
 
 void DebugBox::init() {
-    std::cout << "Box::init()" << std::endl;
+    logging::verbose("Box::init()");
 }

@@ -15,7 +15,7 @@ public:
     public:
         unsigned int major = 0;
         unsigned int minor = 2;
-        unsigned int patch = 1;
+        unsigned int patch = 2;
 
         unsigned int build = 1;
     } version;

@@ -14,7 +14,7 @@
 
 Storage* storage;
 
-#define T_STR(v) std::to_string(storage->get()->version.v)
+#define T_STR(v) std::to_string(storage->version.v)
 #define BUILD_STRING T_STR(major) + "." + T_STR(minor) + "." + T_STR(patch) + " Build " + T_STR(build)
 int main() {
     storage = new Storage();

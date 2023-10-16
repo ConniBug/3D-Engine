@@ -32,10 +32,10 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera*
         return;
     }
 
-    logging::debug("OpenGL Version: " + std::string((char*)glGetString(GL_VERSION)));
-    logging::debug("OpenGL Vendor: " + std::string((char*)glGetString(GL_VENDOR)));
+    logging::debug("OpenGL Version:  " + std::string((char*)glGetString(GL_VERSION)));
+    logging::debug("OpenGL Vendor:   " + std::string((char*)glGetString(GL_VENDOR)));
     logging::debug("OpenGL Renderer: " + std::string((char*)glGetString(GL_RENDERER)));
-    logging::debug("OpenGL Shading Language Version: " + std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    logging::debug("GL Shading VRS:  " + std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetCharCallback(window, character_callback);

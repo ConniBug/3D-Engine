@@ -29,14 +29,15 @@ set(SOURCE_FILES
 
         src/CollisionEngine.cpp include/CollisionEngine.h
 
-        src/DebugRendering.cpp
-        include/DebugRendering.h
-
         include/DebugRendering/DebugBox.h
         src/DebugRendering/DebugBox.cpp
 
         include/DebugRendering/DebugEntry.h
         src/DebugRendering/DebugEntry.cpp
+        src/DebugRendering/DebugLine.cpp
+        include/DebugRendering/DebugLine.h
+        Scenes/star_viewer.cpp
+        Scenes/star_viewer.h
 )
 
 

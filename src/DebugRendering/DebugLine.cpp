@@ -2,7 +2,7 @@
 // Created by Conni Bilham on 15/07/2023.
 //
 
-#include "DebugRendering.h"
+#include "DebugRendering/DebugLine.h"
 #include "glad/glad.h"
 
 DebugLine::DebugLine(unsigned int shader_id, glm::vec3 start, glm::vec3 end) {

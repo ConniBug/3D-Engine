@@ -1,9 +1,9 @@
 //
-// Created by Conni Bilham on 15/07/2023.
+// Created by Conni Bilham on 16/10/2023.
 //
 
-#ifndef INC_2D_ENGINE_DEBUGRENDERING_H
-#define INC_2D_ENGINE_DEBUGRENDERING_H
+#ifndef INC_2D_ENGINE_DEBUGLINE_H
+#define INC_2D_ENGINE_DEBUGLINE_H
 
 #include <iostream>
 #include "vec3.hpp"
@@ -26,4 +26,4 @@ public:
 };
 
 
-#endif //INC_2D_ENGINE_DEBUGRENDERING_H
+#endif //INC_2D_ENGINE_DEBUGLINE_H
