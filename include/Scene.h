@@ -8,11 +8,10 @@
 #include "Camera.h"
 #include "DebugRendering/DebugEntry.h"
 #include "Entity_t.h"
-#include "Shader.h"
-#include "Camera.h"
-#include "DebugRendering.h"
 #include "GLFW/glfw3.h"
+#include "Shader.h"
 #include "Storage.h"
+#include <iostream>
 
 class Window;
 class Scene {

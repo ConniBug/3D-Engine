@@ -13,6 +13,9 @@ class PhysicsEngine {
 public:
     Entity_t* entity{};
 
+    glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
+
     PhysicsEngine(Entity_t* entity);
 
     void ApplyPhysics(double deltaTime);

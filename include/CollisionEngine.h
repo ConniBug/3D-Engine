@@ -40,21 +40,24 @@ public:
         auto a = CollisionEngine::side(A, B, P);
         if(a != aUV) {
             logging::info("Side check for A to B failed");
+            return false;
         }
         auto b = CollisionEngine::side(B, C, P);
         if(b != bUV) {
             logging::info("Side check for B to C failed");
+            return false;
         }
         auto c = CollisionEngine::side(C, D, P);
         if(c != cUV) {
             logging::info("Side check for C to D failed");
+            return false;
         }
         auto d = CollisionEngine::side(D, A, P);
         if(d != dUV) {
             logging::info("Side check for D to A failed");
+            return false;
         }
-
-        // TODO: Return a value
+        return true;
     }
 };
 

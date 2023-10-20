@@ -2,9 +2,9 @@
 // Created by Conni Bilham on 10/07/2023.
 //
 
-#include <thread>
-#include "Storage.h"
 #include "../include/Window.h"
+#include "Storage.h"
+#include <thread>
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (storage->loaded_scene)
@@ -69,7 +69,7 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera 
 
 Window::~Window() {
     logging::info("Destroying window");
-    for (auto* scene : storage->scene_list) {
+    for (auto *scene: storage->scene_list) {
         delete scene;
     }
 
@@ -104,7 +104,7 @@ static bool vsync = true;
 
 float fps_history[100];
 static bool full = false;
-static int fps_history_index = 0;
+static int frame_number = 0;
 
 // timing
 float deltaTime = 0.0f;
@@ -137,25 +137,25 @@ void Window::window_loop_callback(GLFWwindow *window) {
 
     glfwSwapBuffers(window);
 
-    if (!full && fps_history_index + 1 == 100) {
+    if (!full && frame_number + 1 == 100) {
         full = true;
-        logging::info("FPS history full");
+        logging::verbose("FPS history full");
     }
-    fps_history[fps_history_index] = 1.0f / deltaTime;
-    fps_history_index = (fps_history_index + 1) % 100;
+    fps_history[frame_number] = 1.0f / deltaTime;
+    frame_number = (frame_number + 1) % 100;
 
     const float fps = 30.0f;
     auto currentFrameDuation = glfwGetTime() - currentFrame;
     if (vsync) {
         glfwSwapInterval(1);
         if (currentFrameDuation < 1.0 / fps) {
-            std::this_thread::sleep_for(std::chrono::milliseconds((int)((1.0 / fps - currentFrameDuation) * 1000)));
+            std::this_thread::sleep_for(std::chrono::milliseconds((int) ((1.0 / fps - currentFrameDuation) * 1000)));
         }
         auto newFrameDuration = glfwGetTime() - currentFrame;
 
         // If lagging
         if (newFrameDuration > 1.0) {
-            logging::error("Lagging behind: " + std::to_string(1/newFrameDuration));
+            logging::error("Lagging behind: " + std::to_string(1 / newFrameDuration));
         }
     } else
         glfwSwapInterval(0);
@@ -193,19 +193,18 @@ void Window::handle_input(GLFWwindow *window) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         toggle = !toggle;
         ready = false;
-    }
-    else if(glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
+    } else if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
         ready = true;
     }
 
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->HandleKeyboard(Camera::CameraMovement::FORWARD, deltaTime, sprinting);
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera->HandleKeyboard(Camera::CameraMovement::BACKWARD, deltaTime);
 
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         camera->HandleKeyboard(Camera::CameraMovement::LEFT, deltaTime);
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera->HandleKeyboard(Camera::CameraMovement::RIGHT, deltaTime);
 
 
@@ -233,7 +232,7 @@ void Window::handle_input(GLFWwindow *window) {
         last_click = current_time;
     }
 
-    if(glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
         logging::info("Wireframe: " + std::to_string(wireframe));
 
         if (wireframe)
@@ -245,12 +244,12 @@ void Window::handle_input(GLFWwindow *window) {
     }
 
     // -/+ for FOV
-//    std::cout << "FOV: " << camera->fov << std::endl;
-    if(glfwGetKey(window,  GLFW_KEY_EQUAL) == GLFW_PRESS) {
+    //    std::cout << "FOV: " << camera->fov << std::endl;
+    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
         camera->HandleMouseScroll(10);
         last_click = current_time;
     }
-    if(glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
         camera->HandleMouseScroll(-10);
         last_click = current_time;
     }

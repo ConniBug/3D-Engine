@@ -5,16 +5,19 @@
 #ifndef INC_2D_ENGINE_SHADER_H
 #define INC_2D_ENGINE_SHADER_H
 
-#include <iostream>
-#include <fstream>
 #include "glad/glad.h"
-#include "logging.h"
 #include "glm.hpp"
+#include "logging.h"
+#include <fstream>
+#include <iostream>
 
 class Shader {
 private:
-    static unsigned int compile_shader(unsigned int type, const std::string& source);
+    static unsigned int compile_shader(unsigned int type, const std::string &source);
+    static unsigned int link_shaders(unsigned int fragment_id, unsigned int vertex_id);
+
     static bool check_compile_status(unsigned int shader_id);
+
 public:
     unsigned int id;
 
@@ -24,16 +27,15 @@ public:
     std::string fragment_path;
     std::string fragment_raw;
 
-    Shader(const std::string& vertex_path,
-           const std::string& fragment_path
-    );
+    Shader(const std::string &vertex_path,
+           const std::string &fragment_path);
     ~Shader();
 
     void reload();
-    void load_shader(const std::string& vertex_path_r, const std::string& fragment_path_r);
+    void load_shader(const std::string &vertex_path_r, const std::string &fragment_path_r);
 
     void apply(glm::mat4 view = glm::mat4(0.0f), glm::mat4 projection = glm::mat4(0.0f)) const;
 };
 
 
-#endif //INC_2D_ENGINE_SHADER_H
+#endif//INC_2D_ENGINE_SHADER_H

@@ -2,6 +2,8 @@
 // Created by Conni Bilham on 24/07/2023.
 //
 
+#define G -9.81
+
 #include "PhysicsEngine.h"
 
 PhysicsEngine::PhysicsEngine(Entity_t *entity) {
@@ -9,9 +11,22 @@ PhysicsEngine::PhysicsEngine(Entity_t *entity) {
 }
 
 void PhysicsEngine::ApplyPhysics(double deltaTime) {
-//    std::cout << "PhysicsEngine::ApplyPhysics(Entity_t* entity) Called" << std::endl;
+//    logging::verbose("PhysicsEngine::ApplyPhysics()");
 
-    if(entity->physics.enabled) {
-        this->entity->position.y = this->entity->position.y - (9.81 * deltaTime); // Haha gravity
-    }
+    auto* acceleration = &this->entity->physics.engine->acceleration;
+    auto* velocity = &this->entity->physics.engine->velocity;
+    if(!this->entity->physics.enabled)
+        return;
+
+    acceleration->y = G;
+
+    // Hate this but glm::vec3 doesn't have operators setup correctly
+    velocity->x += acceleration->x * (float)deltaTime;
+    velocity->y += acceleration->y * (float)deltaTime;
+    velocity->z += acceleration->z * (float)deltaTime;
+
+    // Hate this but glm::vec3 doesn't have operators setup correctly
+    this->entity->position.x += velocity->x;
+    this->entity->position.y += velocity->y;
+    this->entity->position.z += velocity->z;
 }

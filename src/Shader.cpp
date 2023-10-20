@@ -44,50 +44,16 @@ void Shader::load_shader(const std::string &vertex_path_r, const std::string &fr
     this->fragment_raw = std::string((std::istreambuf_iterator<char>(fragment_shader_file)),
                                      std::istreambuf_iterator<char>());
 
-    const char* vertex_raw = this->vertex_raw.c_str();
-    const char* fragment_raw = this->fragment_raw.c_str();
-
     // Compile vertex shader
-    logging::verbose("Compiling vertex shader");
-    unsigned int vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader_id, 1, &vertex_raw, nullptr);
-    glCompileShader(vertex_shader_id);
-    if(!check_compile_status(vertex_shader_id)) {
-        logging::error("ERROR::SHADER::VERTEX::COMPILATION_FAILED");
-        std::cout << "Press enter to continue..." << std::endl;
-        std::cin.get();
-    }
+    logging::debug("Compiling vertex shader");
+    unsigned int vertex_shader_id = compile_shader(GL_VERTEX_SHADER, this->vertex_raw);
+
     // Compile fragment shader
-    logging::verbose("Compiling fragment shader");
-    unsigned int fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader_id, 1, &fragment_raw, nullptr);
-    glCompileShader(fragment_shader_id);
-    if(!check_compile_status(fragment_shader_id)) {
-        logging::error("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED");
-        std::cout << "Press enter to continue..." << std::endl;
-        std::cin.get();
-    }
+    logging::debug("Compiling fragment shader");
+    unsigned int fragment_shader_id = compile_shader(GL_FRAGMENT_SHADER, this->fragment_raw);
+
     // Link shaders
-    logging::verbose("Linking vertex and fragment shaders");
-    this->id = glCreateProgram();
-    glAttachShader(this->id, vertex_shader_id);
-    glAttachShader(this->id, fragment_shader_id);
-    glLinkProgram(this->id);
-
-    // Check for linking errors
-    int success;
-    char info_log[512];
-    glGetProgramiv(this->id, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(this->id, 512, nullptr, info_log);
-        logging::error("ERROR::SHADER::PROGRAM::LINKING_FAILED");
-        std::cout << info_log << std::endl;
-    }
-    logging::debug("Shaders linked successfully");
-
-    // Delete shaders
-    glDeleteShader(vertex_shader_id);
-    glDeleteShader(fragment_shader_id);
+    this->id = Shader::link_shaders(fragment_shader_id, vertex_shader_id);
 }
 
 bool Shader::check_compile_status(unsigned int shader_id) {
@@ -118,22 +84,66 @@ void Shader::apply(glm::mat4 view, glm::mat4 projection) const {
     int phaseID = glGetUniformLocation(this->id, "phase");
     glUniform1f(phaseID, value + 1);
 
-    if(view != glm::mat4(0))
+    if (view != glm::mat4(0))
         glUniformMatrix4fv(glGetUniformLocation(this->id, "view"), 1, GL_FALSE, &view[0][0]);
-    if(projection != glm::mat4(0))
+    if (projection != glm::mat4(0))
         glUniformMatrix4fv(glGetUniformLocation(this->id, "projection"), 1, GL_FALSE, &projection[0][0]);
 }
 
+std::string ShaderTypeRaw(unsigned int type) {
+    switch (type) {
+        case (GL_VERTEX_SHADER):
+            return "VERTEX";
+        case (GL_FRAGMENT_SHADER):
+            return "FRAGMENT";
+        default:
+            return "UNKNOWN_TYPE";
+    }
+}
 
 unsigned int Shader::compile_shader(unsigned int type, const std::string &source) {
-    logging::debug("Shader::compile_shader() - " + std::to_string(type) + " - " + source);
+    auto type_e = ShaderTypeRaw(type);
+    logging::verbose("Shader::compile_shader() - " + type_e);
     unsigned int shader_id = glCreateShader(type);
 
-    const char* CSource = source.c_str();
+    const char *CSource = source.c_str();
     glShaderSource(shader_id, 1, &CSource, nullptr);
     glCompileShader(shader_id);
-    check_compile_status(shader_id);
+    if (!check_compile_status(shader_id)) {
+        logging::error("ERROR::SHADER::" + type_e + "::COMPILATION_FAILED");
+
+        std::cout << "Press enter to continue..." << std::endl;
+        std::cin.get();
+    }
     return shader_id;
+}
+
+unsigned int Shader::link_shaders(unsigned int fragment_id, unsigned int vertex_id) {
+    // Link shaders
+    logging::verbose("Linking vertex and fragment shaders");
+    auto id = glCreateProgram();
+    glAttachShader(id, vertex_id);
+    glAttachShader(id, fragment_id);
+    glLinkProgram(id);
+
+    // Check for linking errors
+    int success;
+    char info_log[512];
+    glGetProgramiv(id, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(id, 512, nullptr, info_log);
+        logging::error("ERROR::SHADER::PROGRAM::LINKING_FAILED");
+        std::cout << info_log << std::endl;
+
+        std::cout << "Press enter to continue..." << std::endl;
+        std::cin.get();
+    } else
+        logging::debug("Shaders linked successfully");
+
+    // Delete shaders
+    glDeleteShader(vertex_id);
+    glDeleteShader(fragment_id);
+    return id;
 }
 
 void Shader::reload() {
