@@ -11,11 +11,11 @@ Scene::Scene() {
 Scene::~Scene() {
     this->Shutdown(0);
 
-    for (auto* entry : debug_list)
+    for (auto *entry: debug_list)
         delete entry;
-    for (auto* entry : entity_list)
+    for (auto *entry: entity_list)
         delete entry;
-    for (auto* shader : shaders)
+    for (auto *shader: shaders)
         delete shader;
 }
 
@@ -28,37 +28,38 @@ void Scene::update(double deltaTime) {
     this->Update(deltaTime);
 }
 
-void Scene::init(Camera* camera) {
+void Scene::init(Camera *camera, Window *window) {
     if (initiated == 0) {
         initiated = 1;
     } else {
         logging::error("Scene::init() - Scene already initiated");
         return;
     }
-//    logging::debug("Scene::init()");
+    //    logging::debug("Scene::init()");
     this->Init(camera);
+    this->main_window = window;
 }
 
 // DO NOT EDIT - WONT DO ANYTHING - Overridden
 
-void Scene::Init(Camera* camera) {
-    logging::debug("Scene::Init()");
+void Scene::Init(Camera *camera) {
+    logging::verbose("Scene::Init()");
 }
 
 void Scene::Update(double deltaTime) {
-    logging::debug("Scene::Update()");
+    logging::verbose("Scene::Update()");
 }
 
 void Scene::WindowResize(int width, int height) {
-    logging::debug("Scene::WindowResize()");
+    logging::verbose("Scene::WindowResize()");
 }
 
 void Scene::HandleInput(GLFWwindow *window) {
-//    logging::debug("Scene::HandleInput()");
+    //    logging::verbose("Scene::HandleInput()");
 }
 
 void Scene::Shutdown(int cause) {
-    logging::debug("Scene::Shutdown()");
+    logging::verbose("Scene::Shutdown(" + std::to_string(cause) + ")");
 }
 
 void Scene::KeyPressed(GLFWwindow *window, int key, int scancode, int mods) {
@@ -78,8 +79,7 @@ void Scene::HandleMouseScroll(float yoffset) {
 
 void Scene::draw_debug() {
     // Draw debug entities
-    for (auto* entry : debug_list) {
+    for (auto *entry: debug_list) {
         entry->draw();
     }
 }
-

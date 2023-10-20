@@ -11,7 +11,7 @@
 #include "../include/PhysicsEngine.h"
 #include "DebugRendering/DebugBox.h"
 
-void main_scene::Init(Camera* camera) {
+void main_scene::Init(Camera *camera) {
     logging::verbose("main_scene::init()");
 
     this->camera = camera;
@@ -91,4 +91,12 @@ void main_scene::Update(double deltaTime) {
 
 void main_scene::WindowResize(int width, int height) {
 
+void main_scene::HandleMouseMovement(float xoffset, float yoffset) {
+    const float pitch_max = 89;
+    if (camera->pitch < -pitch_max) {
+        camera->pitch = -pitch_max;
+    }
+    if (camera->pitch > pitch_max) {
+        camera->pitch = pitch_max;
+    }
 }

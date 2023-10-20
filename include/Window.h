@@ -15,7 +15,6 @@
 #include "../include/Shader.h"
 #include "../include/logging.h"
 
-#include "Storage.h"
 #include <iostream>
 
 class Window {

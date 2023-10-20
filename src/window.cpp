@@ -6,20 +6,20 @@
 #include "Storage.h"
 #include "../include/Window.h"
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if(storage->loaded_scene)
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    if (storage->loaded_scene)
         storage->loaded_scene->KeyPressed(window, key, scancode, mods);
-//    std::cout << "[" + std::to_string(key) + "] - " + "[" + std::to_string(scancode) + "] - " + "[" + std::to_string(action) + "] - " + "[" + std::to_string(mods) + "]" << std::endl;
+    //    std::cout << "[" + std::to_string(key) + "] - " + "[" + std::to_string(scancode) + "] - " + "[" + std::to_string(action) + "] - " + "[" + std::to_string(mods) + "]" << std::endl;
 }
-void character_callback(GLFWwindow* window, unsigned int codepoint) {
-//    std::cout << (char)codepoint << std::endl;
+void character_callback(GLFWwindow *window, unsigned int codepoint) {
+    //    std::cout << (char)codepoint << std::endl;
 }
 
-Window::Window(int width, int height, std::string title, int fullscreen, Camera* camera) : width(width), height(height), title(title) {
+Window::Window(int width, int height, std::string title, int fullscreen, Camera *camera) : width(width), height(height), title(title) {
     this->loaded_scene = storage->scene_list.at(storage->loaded_scene_number);
     this->camera = camera;
 
-    GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), fullscreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(width, height, title.c_str(), fullscreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
     if (window == nullptr) {
         logging::error("Failed to create GLFW window");
         glfwTerminate();
@@ -27,15 +27,15 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera*
     }
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         logging::error("Failed to initialize GLAD");
         return;
     }
 
-    logging::debug("OpenGL Version:  " + std::string((char*)glGetString(GL_VERSION)));
-    logging::debug("OpenGL Vendor:   " + std::string((char*)glGetString(GL_VENDOR)));
-    logging::debug("OpenGL Renderer: " + std::string((char*)glGetString(GL_RENDERER)));
-    logging::debug("GL Shading VRS:  " + std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    logging::debug("OpenGL Version:  " + std::string((char *) glGetString(GL_VERSION)));
+    logging::debug("OpenGL Vendor:   " + std::string((char *) glGetString(GL_VENDOR)));
+    logging::debug("OpenGL Renderer: " + std::string((char *) glGetString(GL_RENDERER)));
+    logging::debug("GL Shading VRS:  " + std::string((char *) glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetCharCallback(window, character_callback);
@@ -45,21 +45,21 @@ Window::Window(int width, int height, std::string title, int fullscreen, Camera*
     glViewport(0, 0, width, height);
 
     glfwSetWindowUserPointer(window, this);
-    auto mouse_callback = [](GLFWwindow* window, double xposIn, double yposIn) {
-        static_cast<class Window*>(glfwGetWindowUserPointer(window))->mouse_callback(window, xposIn, yposIn);
+    auto mouse_callback = [](GLFWwindow *window, double xposIn, double yposIn) {
+        static_cast<class Window *>(glfwGetWindowUserPointer(window))->mouse_callback(window, xposIn, yposIn);
     };
     glfwSetCursorPosCallback(window, mouse_callback);
-    auto scroll_callback = [](GLFWwindow* window, double xoffset, double yoffset) {
-        static_cast<class Window*>(glfwGetWindowUserPointer(window))->scroll_callback(window, xoffset, yoffset);
+    auto scroll_callback = [](GLFWwindow *window, double xoffset, double yoffset) {
+        static_cast<class Window *>(glfwGetWindowUserPointer(window))->scroll_callback(window, xoffset, yoffset);
     };
     glfwSetScrollCallback(window, scroll_callback);
 
 
     logging::info("Window created");
 
-    loaded_scene->init(this->camera);
+    loaded_scene->init(this->camera, this);
 
-    while(!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window)) {
         // ((void (*)(GLFWwindow*)) window_loop_callback)(window);
         window_loop_callback(window);
     }
@@ -77,7 +77,7 @@ Window::~Window() {
     exit(EXIT_SUCCESS);
 }
 
-void Window::set_camera(Camera* camera_n) {
+void Window::set_camera(Camera *camera_n) {
     this->camera = camera_n;
 }
 
@@ -86,17 +86,17 @@ void Window::set_window_title(std::string title_n) {
     glfwSetWindowTitle(glfwGetCurrentContext(), title_n.c_str());
 }
 
-void Window::window_size_callback(GLFWwindow* window, int width, int height) {
+void Window::window_size_callback(GLFWwindow *window, int width, int height) {
     logging::info("Window size changed: " + std::to_string(width) + "x" + std::to_string(height));
 
     storage->window.width = width;
     storage->window.height = height;
-    storage->window.aspect_ratio = (float)storage->window.width / (float)storage->window.height;
+    storage->window.aspect_ratio = (float) storage->window.width / (float) storage->window.height;
 
-    if(window)
+    if (window)
         glViewport(0, 0, width, height);
 
-    if(storage->loaded_scene)
+    if (storage->loaded_scene)
         storage->loaded_scene->WindowResize(width, height);
 }
 
@@ -133,7 +133,6 @@ void Window::window_loop_callback(GLFWwindow *window) {
     static int frameCount = 0;
     frameCount++;
 
-
     loaded_scene->update(deltaTime);
 
     glfwSwapBuffers(window);
@@ -167,7 +166,7 @@ void Window::window_loop_callback(GLFWwindow *window) {
 }
 
 void Window::handle_input(GLFWwindow *window) {
-    if(this->loaded_scene)
+    if (this->loaded_scene)
         this->loaded_scene->HandleInput(window);
 
     static bool wireframe = false;
@@ -178,17 +177,17 @@ void Window::handle_input(GLFWwindow *window) {
 
     static bool sprinting = false;
 
-    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         sprinting = true;
     else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
         sprinting = false;
 
     static bool ready = false;
     static bool toggle = false;
-    if(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && ready) {
-        logging::info("Toggle cursor");
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && ready) {
+        logging::info("Toggled cursor");
 
-        if(!toggle)
+        if (!toggle)
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         else
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -212,7 +211,7 @@ void Window::handle_input(GLFWwindow *window) {
 
     // Everything below will only execute every x amount of time when the key is held
     double current_time = glfwGetTime();
-    if(current_time - last_click < 0.2)
+    if (current_time - last_click < 0.2)
         return;
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
@@ -222,7 +221,7 @@ void Window::handle_input(GLFWwindow *window) {
         this->loaded_scene = storage->scene_list.at(storage->loaded_scene_number);
         storage->loaded_scene = this->loaded_scene;
 
-        this->loaded_scene->init(this->camera);
+        this->loaded_scene->init(this->camera, this);
         last_click = current_time;
     }
 
@@ -257,7 +256,7 @@ void Window::handle_input(GLFWwindow *window) {
     }
 }
 
-void Window::mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
+void Window::mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
     static float lastX = 800.0f / 2.0;
     static float lastY = 600.0 / 2.0;
 

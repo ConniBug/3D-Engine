@@ -13,8 +13,8 @@
 #include "DebugRendering.h"
 #include "DebugRendering/DebugBox.h"
 
-static DebugBox* box;
-void orth_scene::Init(Camera* camera) {
+static DebugBox *box;
+void orth_scene::Init(Camera *camera) {
     logging::verbose("orth_scene::init()");
 
     this->camera = camera;
@@ -57,7 +57,7 @@ void orth_scene::Update(double deltaTime) {
 
     view = camera->view_matrix();
 
-    for (auto &entity : entity_list) {
+    for (auto &entity: entity_list) {
 
         // First we want to apply physics eg gravity etc
         {
@@ -94,4 +94,21 @@ void orth_scene::Update(double deltaTime) {
 //        shaders[1]->apply();
         draw_debug();
     }
+}
+void orth_scene::HandleMouseMovement(float xoffset, float yoffset) {
+    const float pitch_max = 5;
+    const float yaw_max = 5;
+
+    if (camera->pitch > pitch_max)
+        camera->pitch = pitch_max;
+    if (camera->pitch < -pitch_max)
+        camera->pitch = -pitch_max;
+
+    if (camera->yaw < -90.f - yaw_max) {
+        camera->yaw = -90.f - yaw_max;
+    }
+    if (camera->yaw > -90.f + yaw_max) {
+        camera->yaw = -90.f + yaw_max;
+    }
+    logging::debug(std::to_string(camera->pitch));
 }

@@ -4,70 +4,11 @@
 
 #include "../include/Shader.h"
 
-//unsigned int load_shader() {
-//    // Build root project path
-//    const std::string root_path = std::string("/Users/connibilham/CLionProject/2D-Engine/");
-//
-//    // Load vertex shader from file
-//    auto vertex_shader_file = std::ifstream(root_path + "shaders/vertex.glsl");
-//    std::string vertex_shader_str((std::istreambuf_iterator<char>(vertex_shader_file)),
-//                                  std::istreambuf_iterator<char>());
-//    const char* vertex_shader = vertex_shader_str.c_str();
-//
-//    // Load fragment shader from file
-//    auto fragment_shader_file = std::ifstream(root_path + "shaders/fragment.glsl");
-//    std::string fragment_shader_str((std::istreambuf_iterator<char>(fragment_shader_file)),
-//                                    std::istreambuf_iterator<char>());
-//    const char* fragment_shader = fragment_shader_str.c_str();
-//
-//    // Compile vertex shader
-//    std::cout << "Compiling vertex shader" << std::endl;
-//    std::cout << vertex_shader << std::endl;
-//    unsigned int vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
-//    glShaderSource(vertex_shader_id, 1, &vertex_shader, nullptr);
-//    glCompileShader(vertex_shader_id);
-////    check_compile_status(vertex_shader_id);
-//
-//    // Compile fragment shader
-//    std::cout << "Compiling fragment shader" << std::endl;
-//    std::cout << fragment_shader << std::endl;
-//    unsigned int fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
-//    glShaderSource(fragment_shader_id, 1, &fragment_shader, nullptr);
-//    glCompileShader(fragment_shader_id);
-////    check_compile_status(fragment_shader_id);
-//
-//    // Link shaders
-//    std::cout << "Linking shaders" << std::endl;
-//    unsigned int shader_program_id = glCreateProgram();
-//    glAttachShader(shader_program_id, vertex_shader_id);
-//    glAttachShader(shader_program_id, fragment_shader_id);
-//    glLinkProgram(shader_program_id);
-//
-//    // Check for linking errors
-//    int success;
-//    char info_log[512];
-//    glGetProgramiv(shader_program_id, GL_LINK_STATUS, &success);
-//    if (!success) {
-//        glGetProgramInfoLog(shader_program_id, 512, nullptr, info_log);
-//        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
-//    }
-//    std::cout << "Shaders linked successfully" << std::endl;
-//
-//    // Delete shaders
-//    glDeleteShader(vertex_shader_id);
-//    glDeleteShader(fragment_shader_id);
-//
-//    // Use shader program
-////    glUseProgram(shader_program_id);
-//
-//    return shader_program_id;
-//}
-
-Shader::Shader(const std::string& vertex_path, const std::string& fragment_path) {
-    logging::verbose("Creating new shader" + vertex_path + " " + fragment_path);
+Shader::Shader(const std::string &vertex_path, const std::string &fragment_path) {
+    logging::verbose("Creating new shader " + vertex_path + " " + fragment_path);
 
     this->load_shader(vertex_path, fragment_path);
-//    ::load_shader();
+    // ::load_shader();
 }
 
 Shader::~Shader() {
@@ -75,9 +16,9 @@ Shader::~Shader() {
     glDeleteProgram(this->id);
 }
 
-void Shader::load_shader(const std::string& vertex_path_r, const std::string& fragment_path_r) {
-    // Get current working directory from environment
-    char* root_path = std::getenv("PWD");
+void Shader::load_shader(const std::string &vertex_path_r, const std::string &fragment_path_r) {
+    // Get current working directory from environment vars
+    char *root_path = std::getenv("PWD");
     if (root_path == nullptr) {
         logging::error("ERROR::SHADER::CWD_NOT_FOUND");
         return;
