@@ -20,7 +20,7 @@ Scene::~Scene() {
 }
 
 void Scene::update(double deltaTime) {
-    if(camera == nullptr) {
+    if (camera == nullptr) {
         logging::error("Scene::update() - Camera is null");
         return;
     }
@@ -61,9 +61,18 @@ void Scene::Shutdown(int cause) {
     logging::debug("Scene::Shutdown()");
 }
 
-void Scene::KeyPressed(GLFWwindow* window, int key, int scancode, int mods) {
-    // logging::debug("Scene::KeyPressed()");
+void Scene::KeyPressed(GLFWwindow *window, int key, int scancode, int mods) {
+    logging::verbose("Scene::KeyPressed()");
 }
+
+void Scene::HandleMouseMovement(float xoffset, float yoffset) {
+    logging::verbose("Scene::HandleMouseMovement(X Offset " + std::to_string(xoffset) + ", Y Offset " + std::to_string(yoffset) + ")");
+}
+
+void Scene::HandleMouseScroll(float yoffset) {
+    logging::verbose("Scene::HandleMouseScroll(Y Offset " + std::to_string(yoffset) + ")");
+}
+
 
 ////////////////////////////
 

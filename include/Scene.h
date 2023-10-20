@@ -40,6 +40,9 @@ public:
     virtual void Shutdown(int cause = 0);
     virtual void KeyPressed(GLFWwindow* window, int key, int scancode, int mods);
 
+    virtual void HandleMouseMovement(float xoffset, float yoffset);
+    virtual void HandleMouseScroll(float yoffset);
+
     void draw_debug();
 };
 

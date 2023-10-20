@@ -11,11 +11,11 @@
 #define DEFAULT_SENSITIVITY 0.1f
 #define DEFAULT_ZOOM 45.0f
 
-#include "vec3.hpp"
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
 #include "logging.h"
+#include "vec3.hpp"
 
 
 #include <iostream>
@@ -93,44 +93,28 @@ public:
         }
     }
 
-    void HandleMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true) {
-        this->yaw   += x_offset * this->mouse_sensitivity;
+    void HandleMouseMovement(float x_offset, float y_offset) {
+        this->yaw += x_offset * this->mouse_sensitivity;
         this->pitch += y_offset * this->mouse_sensitivity;
 
-//        const float pitch_max = 5.f;
-//        const float yaw_max = 5.f;
-//        if (this->pitch > pitch_max)
-//            this->pitch = pitch_max;
-//        if (this->pitch < -pitch_max)
-//            this->pitch = -pitch_max;
-//
-//        if (this->yaw < -90.f - yaw_max) {
-//            this->yaw = -90.f - yaw_max;
-//        }
-//        if (this->yaw > -90.f + yaw_max) {
-//            this->yaw = -90.f + yaw_max;
-//        }
-
-        if(this->yaw > 360.f)
+        if (this->yaw > 360.f)
             this->yaw -= 360.f;
-        if(this->yaw < -360.f)
+        if (this->yaw < -360.f)
             this->yaw += 360.f;
-
-        updateCamera();
     }
 
     void HandleMouseScroll(double offset) {
         // Clamp zoom
-        this->fov -= (float)offset;
+        this->fov -= (float) offset;
         if (this->fov < 1.0f)
             this->fov = 1.0f;
-        else if(this->fov > 120.0f)
+        else if (this->fov > 120.0f)
             this->fov = 120.0f;
     }
 
     glm::mat4 getProjectionMatrix(float width, float height) {
         auto projection = glm::mat4(1.0f);
-        if(this->type == CAMERA_TYPE::NONE) {
+        if (this->type == CAMERA_TYPE::NONE) {
             logging::error("Camera::getProjectionMatrix() - Camera type not set");
             std::getchar();
             exit(-1);
@@ -148,22 +132,21 @@ public:
         return projection;
     }
 
-private:
+    //private:
     void updateCamera() {
         glm::vec3 front = {
                 cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
                 sin(glm::radians(pitch)),
-                sin(glm::radians(yaw)) * cos(glm::radians(pitch))
-        };
-//        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-//        front.y = sin(glm::radians(pitch));
-//        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+                sin(glm::radians(yaw)) * cos(glm::radians(pitch))};
+        //        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        //        front.y = sin(glm::radians(pitch));
+        //        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
         this->front = glm::normalize(front);
 
         this->right = glm::normalize(glm::cross(this->front, this->global_up));
-        this->up    = glm::normalize(glm::cross(this->right, this->front));
+        this->up = glm::normalize(glm::cross(this->right, this->front));
     }
 };
 
 
-#endif //INC_2D_ENGINE_CAMERA_H
+#endif//INC_2D_ENGINE_CAMERA_H

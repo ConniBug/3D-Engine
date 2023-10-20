@@ -261,8 +261,8 @@ void Window::mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     static float lastX = 800.0f / 2.0;
     static float lastY = 600.0 / 2.0;
 
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
+    auto xpos = static_cast<float>(xposIn);
+    auto ypos = static_cast<float>(yposIn);
 
     static bool firstMouse = true;
     if (firstMouse) {
@@ -272,14 +272,18 @@ void Window::mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    float yoffset = lastY - ypos;// reversed since y-coordinates go from bottom to top
 
     lastX = xpos;
     lastY = ypos;
 
     camera->HandleMouseMovement(xoffset, yoffset);
+    loaded_scene->HandleMouseMovement(xoffset, yoffset);
+    camera->updateCamera();
 }
 
-void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+void Window::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     camera->HandleMouseScroll(yoffset);
+
+    loaded_scene->HandleMouseScroll(yoffset);
 }
